@@ -17,21 +17,22 @@
          
      <!-- 
 	      缓存属性解释：
-		必须属性：
-		        name:设置缓存的名称，用于标志缓存,惟一
-		        maxElementsInMemory:在内存中最大的对象数量
-		        maxElementsOnDisk：在DiskStore中的最大对象数量，如为0，则没有限制
-		        eternal：设置元素是否永久的，如果为永久，则timeout忽略
-		        overflowToDisk：是否当memory中的数量达到限制后，保存到Disk
-		可选的属性：
-		        timeToIdleSeconds：设置元素过期前的空闲时间
-		        timeToLiveSeconds：设置元素过期前的活动时间
-		        diskPersistent：是否disk store在虚拟机启动时持久化。默认为false
-		        diskExpiryThreadIntervalSeconds:运行disk终结线程的时间，默认为120秒
-		        memoryStoreEvictionPolicy：策略关于Eviction
+         - 必须属性：
+             name:设置缓存的名称，用于标志缓存,惟一
+             maxElementsInMemory:在内存中最大的对象数量
+             maxElementsOnDisk：在DiskStore中的最大对象数量，如为0，则没有限制
+             eternal：设置元素是否永久的，如果为永久，则timeout忽略
+             overflowToOffHeap：
+             overflowToDisk：是否当memory中的数量达到限制后，保存到Disk
+         - 可选的属性：
+            timeToIdleSeconds：设置元素过期前的空闲时间，缓存自创建日期起至失效时的间隔时间。值为零，意味空闲时间为无穷，默认为零。
+            timeToLiveSeconds：设置元素过期前的活动时间，缓存创建以后，最后一次访问缓存的日期至失效之时的时间间隔。值为零，意味存活时间为无穷，默认为零。
+           diskPersistent：是否disk store在虚拟机启动时持久化。默认为false
+           diskExpiryThreadIntervalSeconds:运行disk终结线程的时间，默认为120秒
+           memoryStoreEvictionPolicy：策略关于Eviction
 		缓存子元素：
 		    cacheEventListenerFactory：注册相应的的缓存监听类，用于处理缓存事件，如put,remove,update,和expire
-		bootstrapCacheLoaderFactory:指定相应的BootstrapCacheLoader，用于在初始化缓存，以及自动设置。
+		    bootstrapCacheLoaderFactory:指定相应的BootstrapCacheLoader，用于在初始化缓存，以及自动设置。
       -->   
         
         

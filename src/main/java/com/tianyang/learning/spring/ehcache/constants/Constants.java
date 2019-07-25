@@ -31,6 +31,8 @@ public interface Constants {
     public static final String URL_SUFFIX_DELETE_CREATE_TEST_CACHE_SUCCESS="deleteCreateTestCacheSuccess";
     public static final String URL_SUFFIX_DELETE_UPDATE_TEST_CACHE_SUCCESS="deleteUpdateTestCacheSuccess";
 
+    public static final String URL_SUFFIX_CHANGE_CACHE_MANAGER_PEER_PROVIDER_FACTORY="changeCacheManagerPeerProviderFactory";
+
     public static final String URL_SUFFIX_GET_CACHE_STATISTIC="getCacheStatistic";
     public static final String URL_SUFFIX_GET_RESULT="getResult";
 

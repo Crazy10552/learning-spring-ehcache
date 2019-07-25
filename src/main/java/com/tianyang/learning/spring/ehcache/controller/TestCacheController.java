@@ -1,11 +1,14 @@
 package com.tianyang.learning.spring.ehcache.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.tianyang.learning.spring.ehcache.constants.Constants;
 import com.tianyang.learning.spring.ehcache.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.distribution.CacheManagerPeerProvider;
+import net.sf.ehcache.distribution.ManualRMICacheManagerPeerProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -15,10 +18,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yttiany
@@ -179,7 +185,7 @@ public class TestCacheController implements Constants {
      * @return
      */
     @Cacheable(value="testCache2",key="#hosId+'_'+'createTestCache2Success'", condition="#hosId!=null",unless="#result.result!=true or #result.data==null")
-    @RequestMapping(value = "/{hosId}/createTestCache2Success", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{hosId}/createTestCache2Success", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ResultVo createTestCache2Success(@PathVariable Long hosId, HttpServletRequest request) {
         log.debug("进入实际生成缓存方法体,本次请求未使用缓存,本方法可以生成有效缓存");
@@ -199,11 +205,11 @@ public class TestCacheController implements Constants {
      */
     @RequestMapping(value = "getResult", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public ResultVo getResult(String cacheName,String cacheKey){
+    public ResultVo getResult(@RequestParam(value="cacheName") String cacheName,@RequestParam(value="cacheKey") String cacheKey){
         ResultVo resultVo = null;
         CacheManager cacheManager=ehCacheCacheManager.getCacheManager();
         if (cacheManager!=null){
-            Ehcache ehcache = cacheManager.getEhcache(CACHE_NEMA_TESTCACHE);
+            Ehcache ehcache = cacheManager.getEhcache(cacheName);
             if(ehcache!=null){
                 Element element = ehcache.get(cacheKey);
                 if(element!=null && element.getObjectValue()!=null
@@ -212,6 +218,53 @@ public class TestCacheController implements Constants {
 
                 }
             }
+        }
+        return resultVo;
+    }
+
+
+    /**
+     * 修改spring-ehcache.xml 中的相关属性类(该文件不是spring常规的加载方式,在spring启动时通过${xxx}获取到值)
+     * @return
+     */
+    @RequestMapping(value = "changeCacheManagerPeerProviderFactory", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ResultVo changeCacheManagerPeerProviderFactory(@RequestParam(value = "rmiUrls") String rmiUrls){
+        ResultVo resultVo = null;
+        //CacheManagerPeerProvider
+        CacheManager cacheManager=ehCacheCacheManager.getCacheManager();
+        if (cacheManager!=null){
+            Map<String, CacheManagerPeerProvider> map = cacheManager.getCacheManagerPeerProviders();
+            //默认生成的CacheManagerPeerProvider 对应的key是RMI
+            CacheManagerPeerProvider cacheManagerPeerProvider = map.get("RMI");
+            if( null != cacheManagerPeerProvider && cacheManagerPeerProvider instanceof ManualRMICacheManagerPeerProvider){
+                ManualRMICacheManagerPeerProvider manualRMICacheManagerPeerProvider=(ManualRMICacheManagerPeerProvider)cacheManagerPeerProvider;
+                manualRMICacheManagerPeerProvider.registerPeer(rmiUrls);
+                Map<String, CacheManagerPeerProvider> modifiableMap=null;
+
+                Class clazz =null;
+                try {
+                    clazz = cacheManager.getClass();
+                    Field fields[] = clazz.getDeclaredFields();
+                    for (Field field:fields) {
+                        if( "cacheManagerPeerProviders".equals(field.getName())){
+                            field.setAccessible(true);
+                            //获取属性
+                            String name = field.getName();
+                            //获取属性值
+                            Object value = field.get(cacheManager);
+                            modifiableMap=(ConcurrentHashMap)value;
+                            modifiableMap.put("RMI",manualRMICacheManagerPeerProvider);
+                            log.debug("");
+                        }
+                    }
+                    log.debug("");
+                } catch (Exception e) {
+                    log.error("",e);
+                }
+                ehCacheCacheManager.setCacheManager(cacheManager);
+            }
+            log.debug(JSON.toJSONString(map));
         }
         return resultVo;
     }
