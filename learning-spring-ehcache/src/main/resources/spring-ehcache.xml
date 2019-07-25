@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
+    monitoring="autodetect" dynamicConfig="true">
+    
+    <!-- RMI形式的分布式缓存同步  -->
+     <cacheManagerPeerProviderFactory
+        class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+              properties="peerDiscovery=manual, 
+              rmiUrls=//127.0.0.1:40002/testCache|//127.0.0.1:40002/testCache2 "
+        propertySeparator="," />
+        
+<!--       配置中通过手动方式同步其他服务器中的缓存资源,此处的端口信息必须和cacheManagerPeerProviderFactory 中配置的端口一致   -->
+      <cacheManagerPeerListenerFactory 
+         class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+          properties="hostName=127.0.0.1, port=40002,socketTimeoutMillis=2000" /> 
+         
+     <!-- 
+	      缓存属性解释：
+		必须属性：
+		        name:设置缓存的名称，用于标志缓存,惟一
+		        maxElementsInMemory:在内存中最大的对象数量
+		        maxElementsOnDisk：在DiskStore中的最大对象数量，如为0，则没有限制
+		        eternal：设置元素是否永久的，如果为永久，则timeout忽略
+		        overflowToDisk：是否当memory中的数量达到限制后，保存到Disk
+		可选的属性：
+		        timeToIdleSeconds：设置元素过期前的空闲时间
+		        timeToLiveSeconds：设置元素过期前的活动时间
+		        diskPersistent：是否disk store在虚拟机启动时持久化。默认为false
+		        diskExpiryThreadIntervalSeconds:运行disk终结线程的时间，默认为120秒
+		        memoryStoreEvictionPolicy：策略关于Eviction
+		缓存子元素：
+		    cacheEventListenerFactory：注册相应的的缓存监听类，用于处理缓存事件，如put,remove,update,和expire
+		bootstrapCacheLoaderFactory:指定相应的BootstrapCacheLoader，用于在初始化缓存，以及自动设置。
+      -->   
+        
+        
+    <!-- 缓存最长存在10分钟后失效，如果5分钟未访问，缓存也会失效 -->
+    <cache name="testCache"
+           maxEntriesLocalHeap="10000" 
+           eternal="false"
+           timeToIdleSeconds="300" 
+           timeToLiveSeconds="600"> 
+        <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+            properties="replicateAsynchronously=false, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true" />
+    </cache>
+    
+     <!-- 缓存最长存在99天后失效，如果99天未访问，缓存也会失效 -->
+    <cache name="testCache2" maxEntriesLocalHeap="10000" eternal="false"
+        timeToIdleSeconds="8640000" timeToLiveSeconds="8640000">
+        <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+            properties="replicateAsynchronously=false, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true" />
+    </cache>
+    
+     <!-- 缓存最长存在12小时后失效，如果12小时未访问，缓存也会失效 -->
+     <cache name="patientCache" maxEntriesLocalHeap="10000" eternal="false"
+        timeToIdleSeconds="43200" timeToLiveSeconds="43200"> 
+        <cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+            properties="replicateAsynchronously=false, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true" />
+                            
+     </cache>
+     
+
+   
+        
+</ehcache>

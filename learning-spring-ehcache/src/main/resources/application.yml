@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: learning-spring-ehcache
+logging:
+  config: classpath:log4j2.xml
+server:
+  port: 8222
+  servlet:
+    context-path: /learning-spring-ehcache
+

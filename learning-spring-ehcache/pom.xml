@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.3.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+    <groupId>com.tianyang</groupId>
+    <artifactId>learning-spring-ehcache</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- ##################################### maven打包相关jar版本信息 #####################################-->
+		<maven.clean.plugin.version>2.4.1</maven.clean.plugin.version>
+        <maven.install.plugin.version>2.3.1</maven.install.plugin.version>
+        <maven.deploy.plugin.version>2.5</maven.deploy.plugin.version>
+        <maven.archetype.plugin.version>2.1</maven.archetype.plugin.version>
+        <maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
+        <maven.war.plugin.version>2.4</maven.war.plugin.version>
+		<maven-jar-plugin.version>2.6</maven-jar-plugin.version>
+        <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
+		<maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+		
+        <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+        <maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
+        <maven.sources.plugin.version>2.2.1</maven.sources.plugin.version>
+        <maven.resources.plugin.version>2.4.3</maven.resources.plugin.version>
+        <exec.maven.plugin.version>1.2.1</exec.maven.plugin.version>
+		
+		 <lombok.version>1.16.18</lombok.version>
+		
+		<disruptor.version>3.3.4</disruptor.version>
+		
+			
+		<alibaba.fastjson.version>1.2.56</alibaba.fastjson.version>
+	
+		<!-- #####################################spring boot 相关jar start##################################### -->
+		<springframework.boot.version>2.0.5.RELEASE</springframework.boot.version>
+		<!-- #####################################spring boot 相关jar end##################################### -->
+	
+		<ehcache-core.version>2.6.6</ehcache-core.version>
+		<spring-content-support.version>4.2.7.RELEASE</spring-content-support.version>
+		
+		<alibaba.fastjson.version>1.2.56</alibaba.fastjson.version>
+        
+        <commons-lang3-version>3.9</commons-lang3-version>
+	</properties>
+    
+    
+    <dependencies>
+        <!--https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-log4j2-->
+        <dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-boot-starter-logging</artifactId>
+					<groupId>org.springframework.boot</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-boot-starter-logging</artifactId>
+					<groupId>org.springframework.boot</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+		</dependency>
+	
+	
+		<!--需要使用log4j2的AsyncLogger需要包含disruptor-->
+		<dependency>
+			<groupId>com.lmax</groupId>
+			<artifactId>disruptor</artifactId>
+			<version>${disruptor.version}</version>
+		</dependency>
+		
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${alibaba.fastjson.version}</version>
+		</dependency>
+	
+	
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3-version}</version>
+		</dependency>
+		
+		<!-- ehcache所需jar：ehchache-core 和spring注解所需 spring-context -->
+		<dependency>
+		   <groupId>net.sf.ehcache</groupId>
+		   <artifactId>ehcache-core</artifactId>
+		   <version>${ehcache-core.version}</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.springframework</groupId>
+		   <artifactId>spring-context-support</artifactId>
+			<version>${spring-content-support.version}</version>
+		</dependency>
+	
+		
+		
+    </dependencies>
+	
+	
+	
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources/</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${springframework.boot.version}</version>
+			</plugin>
+			<!-- 解决maven test命令时console出现中文乱码乱码 -->
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <forkMode>once</forkMode>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+					<skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+			
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/${project.artifactId}</outputDirectory>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>com.sentinel.learning.dubbo.service.demo.SentinelDubboServiceApplication</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>./conf/</Class-Path>
+						</manifestEntries>
+					</archive>
+					<!--  注意从编译结果目录开始算目录结构-->
+					<excludes>
+						<exclude>/*.xml</exclude>
+                        <exclude>/*.sh</exclude>
+                        <exclude>/*.yml</exclude>
+						<exclude>/spring/**</exclude>
+                    </excludes>
+				</configuration>
+			</plugin>
+			
+			
+
+		</plugins>
+	</build>
+</project>
