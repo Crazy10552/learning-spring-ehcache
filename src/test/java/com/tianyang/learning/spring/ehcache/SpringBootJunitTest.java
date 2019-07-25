@@ -107,6 +107,16 @@ public class SpringBootJunitTest implements Constants {
         resultVo = restTemplate.getForObject(url,ResultVo.class);
         log.debug("cacheName=["+CACHE_NAME_APPEND+"]  cacheKey=["+cacheKey+"] \t result="+ JSON.toJSONString(resultVo));
 
+
+        url = URL_APPEND+hosId+URL_APPEND+URL_SUFFIX_DELETE_UPDATE_TEST_CACHE_SUCCESS;
+        cacheKey = hosId+CACHE_NAME_APPEND+URL_SUFFIX_DELETE_UPDATE_TEST_CACHE_SUCCESS;
+        resultVo = restTemplate.getForObject(url,ResultVo.class);
+        log.debug("url=["+url+"]\t result="+JSON.toJSONString(resultVo));
+
+        url = URL_APPEND+URL_SUFFIX_GET_RESULT;
+        resultVo = restTemplate.getForObject(url,ResultVo.class);
+        log.debug("cacheName=["+CACHE_NAME_APPEND+"]  cacheKey=["+cacheKey+"] \t result="+ JSON.toJSONString(resultVo));
+
     }
 
 
@@ -118,8 +128,12 @@ public class SpringBootJunitTest implements Constants {
             String cacheKey = hosId+CACHE_NAME_APPEND+URL_SUFFIX_CREATE_TEST_CACHE_SUCCESS;
             restTemplate.getForObject(url,ResultVo.class);
         }
+        String url = URL_APPEND+hosId+URL_APPEND+URL_SUFFIX_CREATE_TEST_CACHE_2_SUCCESS;
+        String cacheKey = hosId+CACHE_NAME_APPEND+URL_SUFFIX_CREATE_TEST_CACHE_2_SUCCESS;
+        restTemplate.getForObject(url,ResultVo.class);
 
-        String url = URL_APPEND+URL_SUFFIX_GET_CACHE_STATISTIC;
+
+        url = URL_APPEND+URL_SUFFIX_GET_CACHE_STATISTIC;
         restTemplate.getForObject(url,ResultVo.class);
     }
 

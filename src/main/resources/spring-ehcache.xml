@@ -58,16 +58,7 @@
                             replicateUpdatesViaCopy=true, replicateRemovals=true" />
     </cache>
     
-     <!-- 缓存最长存在12小时后失效，如果12小时未访问，缓存也会失效 -->
-     <cache name="patientCache" maxEntriesLocalHeap="10000" eternal="false"
-        timeToIdleSeconds="43200" timeToLiveSeconds="43200"> 
-        <cacheEventListenerFactory
-            class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-            properties="replicateAsynchronously=false, replicatePuts=true,
-                            replicatePutsViaCopy=true, replicateUpdates=true,
-                            replicateUpdatesViaCopy=true, replicateRemovals=true" />
-                            
-     </cache>
+
      
 
    

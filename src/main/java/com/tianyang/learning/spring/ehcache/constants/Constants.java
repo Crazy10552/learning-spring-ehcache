@@ -26,6 +26,7 @@ public interface Constants {
 
     public static final String URL_SUFFIX_CREATE_TEST_CACHE_SUCCESS_BUT_NO_CACHE="createTestCacheSuccessButNoCache";
     public static final String URL_SUFFIX_CREATE_TEST_CACHE_SUCCESS="createTestCacheSuccess";
+    public static final String URL_SUFFIX_CREATE_TEST_CACHE_2_SUCCESS="createTestCache2Success";
     public static final String URL_SUFFIX_UPDATE_TEST_CACHE_SUCCESS="updateTestCacheSuccess";
     public static final String URL_SUFFIX_DELETE_CREATE_TEST_CACHE_SUCCESS="deleteCreateTestCacheSuccess";
     public static final String URL_SUFFIX_DELETE_UPDATE_TEST_CACHE_SUCCESS="deleteUpdateTestCacheSuccess";
