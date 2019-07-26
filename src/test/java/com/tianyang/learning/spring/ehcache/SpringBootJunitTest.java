@@ -12,6 +12,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * @author yttiany
  * @author yttiany
@@ -131,6 +134,19 @@ public class SpringBootJunitTest implements Constants {
         String rmiUrls="//127.0.0.1:40003/testCache|//127.0.0.1:40003/testCache2|//127.0.0.1:40002/testCache|//127.0.0.1:40002/testCache2 ";
         url=url+"?rmiUrls="+rmiUrls;
         restTemplate.getForObject(url,ResultVo.class);
+    }
+
+
+    @Test
+    public void iPTest(){
+        try {
+            String groupAddressString="230.0.0.1";
+            InetAddress ip = InetAddress.getByName(groupAddressString);
+            log.debug(JSON.toJSONString(ip));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } finally {
+        }
     }
 
 

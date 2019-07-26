@@ -4,7 +4,7 @@ spring:
 logging:
   config: classpath:log4j2.xml
 server:
-  port: 8223
+  port: 8224
   servlet:
     context-path: /learning-spring-ehcache
 

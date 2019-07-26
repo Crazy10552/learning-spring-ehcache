@@ -4,35 +4,16 @@
     monitoring="autodetect" dynamicConfig="true">
     
     <!-- RMI形式的分布式缓存同步  -->
-    <cacheManagerPeerProviderFactory
-            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
-            properties="peerDiscovery=automatic,
-            multicastGroupAddress=230.0.0.1,
-            multicastGroupPort=4446,
-            timeToLive=1"/>
-    <!--
-     Socket通信 UDP协议
-     multicastGroupAddress(如果需要区分环境,开发和准生产,可以设置不同的组播地址,避免不同环境相互干扰)
-       组播地址：称为组播组的一组主机所共享的地址。组播地址的范围在224.0.0.0 —— 239.255.255.255之间（都为D类地址 1110开头）
-     timeToLive
-        0是限制在同一个服务器
-        1是限制在同一个子网(ip 和 子网掩码转换成2进制数进行与操作,得到值想用即为统一子网)
-        32是限制在同一个网站
-        64是限制在同一个region
-        128是限制在同一个大洲
-        255是不限制
-        -->
+     <cacheManagerPeerProviderFactory
+        class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+              properties="peerDiscovery=manual, 
+              rmiUrls=//127.0.0.1:40002/testCache|//127.0.0.1:40002/testCache2 "
+        propertySeparator="," />
         
 <!--       配置中通过手动方式同步其他服务器中的缓存资源,此处的端口信息必须和cacheManagerPeerProviderFactory 中配置的端口一致   -->
-    <cacheManagerPeerListenerFactory
-            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
-            properties="port=40002,socketTimeoutMillis=2000"/>
-    
-    <!-- 巨坑,组播模式下请勿自己设置 hostName=localhost 因为这样解析出来的地址127.0.0.1 当在不同设备上部署的时候根本识别不出来-->
-    <!--
-         <cacheManagerPeerListenerFactory
-             class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
-              properties="hostName=localhost, port=40003,socketTimeoutMillis=2000" />  -->
+      <cacheManagerPeerListenerFactory 
+         class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+          properties="hostName=127.0.0.1, port=40002,socketTimeoutMillis=2000" /> 
          
      <!-- 
 	      缓存属性解释：

@@ -1,6 +1,5 @@
 package com.tianyang.learning.spring.ehcache.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.tianyang.learning.spring.ehcache.constants.Constants;
 import com.tianyang.learning.spring.ehcache.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -116,7 +116,7 @@ public class TestCacheController implements Constants {
      * @param request
      * @return
      */
-    @CachePut(value="testCache",key="#hosId+'_'+'updateTestCacheSuccess'", condition="#hosId!=null",unless="#result.result!=true or #result.data==null")
+    @CachePut(value="testCache",key="#hosId+'_'+'createTestCacheSuccess'", condition="#hosId!=null",unless="#result.result!=true or #result.data==null")
     @RequestMapping(value = "/{hosId}/updateTestCacheSuccess", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ResultVo updateTestCacheSuccess(@PathVariable Long hosId, HttpServletRequest request) {
@@ -137,7 +137,7 @@ public class TestCacheController implements Constants {
      * @param request
      * @return
      */
-    @CacheEvict(value="testCache",key="#hosId+'_'+'deleteCreateTestCacheSuccess'", condition="#hosId!=null")
+    @CacheEvict(value="testCache",key="#hosId+'_'+'createTestCacheSuccess'", condition="#hosId!=null")
     @RequestMapping(value = "/{hosId}/deleteCreateTestCacheSuccess", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ResultVo deleteCreateTestCacheSuccess(@PathVariable Long hosId, HttpServletRequest request) {
@@ -148,33 +148,6 @@ public class TestCacheController implements Constants {
         resultVo.setData((Object)("删除缓存成功"+System.currentTimeMillis()));
         return resultVo;
     }
-
-
-    /**
-     * 删除缓存
-     * 删除缓存@CacheEvict
-     * 根据value 和key值来唯一找到缓存记录，并且清理缓存信息
-     * @param hosId
-     * @param request
-     * @return
-     */
-    @CacheEvict(value="testCache",key="#hosId+'_'+'deleteUpdateTestCacheSuccess'", condition="#hosId!=null")
-    @RequestMapping(value = "/{hosId}/deleteUpdateTestCacheSuccess", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ResultVo deleteUpdateTestCacheSuccess(@PathVariable Long hosId, HttpServletRequest request) {
-        log.debug("删除updateTestCacheSuccess生成的缓存");
-        ResultVo resultVo = new ResultVo();
-        resultVo.setKind(SUCCESS_CODE);
-        resultVo.setResult(true);
-        resultVo.setData((Object)("删除缓存成功"+System.currentTimeMillis()));
-        return resultVo;
-    }
-
-
-
-
-
-
 
 
 
@@ -223,6 +196,8 @@ public class TestCacheController implements Constants {
     }
 
 
+
+    public static final String URL_DELIMITER = "|";
     /**
      * 修改spring-ehcache.xml 中的相关属性类(该文件不是spring常规的加载方式,在spring启动时通过${xxx}获取到值)
      * @return
@@ -234,14 +209,20 @@ public class TestCacheController implements Constants {
         //CacheManagerPeerProvider
         CacheManager cacheManager=ehCacheCacheManager.getCacheManager();
         if (cacheManager!=null){
+            //此处查看源码可知返回的是一个ummoifyMap,字面意思不可更改的map(ConcureentHashMap)
             Map<String, CacheManagerPeerProvider> map = cacheManager.getCacheManagerPeerProviders();
             //默认生成的CacheManagerPeerProvider 对应的key是RMI
             CacheManagerPeerProvider cacheManagerPeerProvider = map.get("RMI");
             if( null != cacheManagerPeerProvider && cacheManagerPeerProvider instanceof ManualRMICacheManagerPeerProvider){
                 ManualRMICacheManagerPeerProvider manualRMICacheManagerPeerProvider=(ManualRMICacheManagerPeerProvider)cacheManagerPeerProvider;
-                manualRMICacheManagerPeerProvider.registerPeer(rmiUrls);
+                StringTokenizer stringTokenizer = new StringTokenizer(rmiUrls, URL_DELIMITER);
+                while (stringTokenizer.hasMoreTokens()) {
+                    String rmiUrl = stringTokenizer.nextToken();
+                    rmiUrl = rmiUrl.trim();
+                    manualRMICacheManagerPeerProvider.registerPeer(rmiUrls);
+                    log.debug("Registering peer {}", rmiUrl);
+                }
                 Map<String, CacheManagerPeerProvider> modifiableMap=null;
-
                 Class clazz =null;
                 try {
                     clazz = cacheManager.getClass();
@@ -256,6 +237,7 @@ public class TestCacheController implements Constants {
                             modifiableMap=(ConcurrentHashMap)value;
                             modifiableMap.put("RMI",manualRMICacheManagerPeerProvider);
                             log.debug("");
+                            break;
                         }
                     }
                     log.debug("");
@@ -264,7 +246,6 @@ public class TestCacheController implements Constants {
                 }
                 ehCacheCacheManager.setCacheManager(cacheManager);
             }
-            log.debug(JSON.toJSONString(map));
         }
         return resultVo;
     }
